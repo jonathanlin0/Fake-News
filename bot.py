@@ -24,69 +24,113 @@ def extractText(url):
 
     #specific class is the class name that contains the paragraph
     #websites this doesn't support:
-    #latimes.com because it blocks requests and has paywalls
-    specific_class = '' #will be used if all of text is in repeated classes w same class name
-    parent_class = '' # will be used if all of the text is under a single class. and the elements w the text does not have a class name
+    #wsj.com because paywall
+    #time.com because paywall
+    #buzzfeednews.com cuz html configuration
+
+    class_name = [] #name of class. This class name can either be the class holding all of the paragraphs (in this case the paragraphs don't have a class name) or it can be the names of the duplicate classes holding all of the text. is an array because some websites may have diff class names depending on the article
     class_type = '' #this will change depending on the class type holding the words. can be p, span, div, etc.
-    method_type = 0 #method type 0 is paragraphs have class name. method type 1 is paragraphs don't have class name
+    method_type = 0 #method type 0 is defult. method type 1 is needing a browser agent replicating a mobile device
     if 'nytimes.com' in url:
-        specific_class = 'css-axufdj evys1bk0'
+        class_name.append('css-iynevi evys1bk0')
         method_type = 0
         class_type = 'p'
     elif 'medium.com' in url:
-        specific_class = 'sm sn pb so b pz sp sq sr qc ss st su sv sw sx sy sz ta tb tc td te tf tg th ou by'
+        class_name.append('meteredContent')
         method_type = 0
-        class_type = 'p'
+        class_type = 'article'
     elif 'foxnews.com' in url:
-        parent_class = 'article-body'
-        method_type = 1
+        class_name.append('article-body')
+        method_type = 0
         class_type = 'div'
     elif 'tmz.com' in url:
-        parent_class = 'article__blocks clearfix'
-        method_type = 1
+        class_name.append('article__blocks clearfix')
+        method_type = 0
         class_type = 'div'
     elif 'buzzfeed.com' in url:
-        specific_class = 'js-subbuzz__title-text'
+        class_name.append('js-subbuzz__title-text')
         method_type = 0
         class_type = 'span'
     elif 'cnn.com' in url:
-        specific_class = 'zn-body__paragraph'
+        class_name.append('zn-body__paragraph')
         method_type = 0
         class_type = 'div'
     elif 'bbc.com' in url:
-        parent_class = 'css-83cqas-RichTextContainer e5tfeyi2'
-        method_type = 1
+        class_name.append('ssrcss-83cqas-RichTextContainer e5tfeyi2')
+        class_name.append('css-83cqas-RichTextContainer e5tfeyi2')
+        method_type = 0
         class_type = 'div'
     elif 'economist.com' in url:
-        parent_class = 'article__body-text'
-        method_type = 1
-        class_type = 'p'
-    elif 'reuters.com' in url:
-        specific_class = 'Paragraph-paragraph-2Bgue ArticleBody-para-TD_9x'
+        class_name.append('article__body-text')
         method_type = 0
         class_type = 'p'
+    elif 'reuters.com' in url:
+        class_name.append('Paragraph-paragraph-2Bgue ArticleBody-para-TD_9x')
+        method_type = 0
+        class_type = 'p'
+    elif 'abcnews' in url:
+        class_name.append('Article__Content story')
+        method_type = 0
+        class_type = 'section'
+    elif 'apnews.com' in url:
+        class_name.append('Article')
+        method_type = 0
+        class_type = 'div'
+    elif 'ndtv.com' in url:
+        class_name.append('sp-cn ins_storybody')
+        method_type = 0
+        class_type = 'div'
+    elif 'huffpost.com' in url:
+        class_name.append('content-list-component yr-content-list-text text')
+        method_type = 1
+        class_type = 'div'
+    elif 'latimes.com' in url:
+        class_name.append('page-article-body')
+        method_type = 1
+        class_type = 'div'
+    elif 'nbcnews.com' in url:
+        class_name.append('article-body__content')
+        method_type = 0
+        class_type = 'div'
         
 
 
     entire_text = ''
     if method_type == 0:
-        #assigns all of the class objects with the specific class names
-        page_content = soup.find_all(class_type , class_ = specific_class)
-        
-        #for each paragraph in the page_content, combine them together
-        for para in page_content:
-            entire_text = entire_text + para.get_text()
-    if method_type == 1:
         #this combines all of the text in the children of the parent class (the div is parent and pargraphs r children nodes)
         soup = BeautifulSoup(r1.text, 'html.parser')
-        elements = soup.find_all(class_type , parent_class)
-        for elem in elements:
-            entire_text = entire_text +elem.get_text()
+
+        #it uses this because there may be different class names depending on the website
+        for cn in class_name:
+            page_content = soup.find_all(class_type , class_ = cn)
+            #for each class, combine the texts of the paras together
+            for para in page_content:
+                entire_text = entire_text + para.get_text()
+        
+    if method_type == 1:
+        #this method impersonates a mobile browser because some websites block the http requests module
+        headers = {
+        'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive'
+        }
+        res = requests.get(url, headers = headers)
+        soup = BeautifulSoup(res.text, 'html.parser')
+
+        #it uses this because there may be different class names depending on the website
+        for cn in class_name:
+            page_content = soup.find_all(class_type , class_ = cn)
+            #for each class, combine the texts of the paras together
+            for para in page_content:
+                entire_text = entire_text + para.get_text()
 
 
     return entire_text
 
-print(extractText('https://www.reuters.com/article/us-health-coronavirus-australia/australia-approves-pfizer-vaccine-warns-of-limited-global-astrazeneca-supply-idUSKBN29T0T4'))
+url = 'https://www.nbcnews.com/politics/white-house/biden-reverse-trump-s-transgender-military-ban-n1255522'
+
+print(extractText(url))
 
 #PAC model taken from youtube, mainly https://www.youtube.com/watch?v=z_mNVoBcMjM&ab_channel=SATSifaction and then a few other videos
 
@@ -143,7 +187,7 @@ def findlabel(newtext):
 
 
 
-print(findlabel(extractText('https://www.economist.com/business/2021/01/21/the-secrets-of-successful-listening')))
+print(findlabel(extractText(url)))
 
 
 
