@@ -9,6 +9,7 @@ from newspaper import Article
 import urllib.request
 import requests
 from bs4 import BeautifulSoup
+from parser import *
 
 
 def extractText(url):
@@ -27,6 +28,10 @@ def extractText(url):
     #wsj.com because paywall
     #time.com because paywall
     #buzzfeednews.com cuz html configuration
+    #ft.com because paywall
+    #telegraph.co because issues w extracting text
+    #cbc.ca because issues w extracting text
+    #bloomberg.com because issues w extracting text
 
     class_name = [] #name of class. This class name can either be the class holding all of the paragraphs (in this case the paragraphs don't have a class name) or it can be the names of the duplicate classes holding all of the text. is an array because some websites may have diff class names depending on the article
     class_type = '' #this will change depending on the class type holding the words. can be p, span, div, etc.
@@ -92,7 +97,65 @@ def extractText(url):
         class_name.append('article-body__content')
         method_type = 0
         class_type = 'div'
-        
+    elif 'theguardian' in url:
+        class_name.append('css-38z03z')
+        method_type = 0
+        class_type = 'p'
+    elif 'sky.com' in url:
+        class_name.append('sdc-article-body sdc-article-body--story sdc-article-body--lead')
+        method_type = 0
+        class_type = 'div'
+    elif 'newsweek.com' in url:
+        class_name.append('article-body clearfix paywall')
+        class_name.append('article-body v_text paywall')
+        method_type = 1
+        class_type = 'div'
+    elif 'cnbc.com' in url:
+        class_name.append('ArticleBody-articleBody')
+        method_type = 0
+        class_type = 'div'
+    elif 'france24.com' in url:
+        class_name.append('t-content__body u-clearfix')
+        method_type = 1
+        class_type = 'div'
+    elif 'rt.com' in url:
+        class_name.append('article__text text')
+        method_type = 0
+        class_type = 'div'
+    elif 'independent.co' in url:
+        class_name.append('sc-pTSbw gOmWnw')
+        method_type = 1
+        class_type = 'div'
+    elif 'xinhuanet.com' in url:
+        class_name.append('content')
+        method_type = 0
+        class_type = 'div'
+    elif 'aljazeera.com' in url:
+        class_name.append('wysiwyg wysiwyg--all-content')
+        method_type = 0
+        class_type = 'div'
+    elif 'espn.com' in url:
+        class_name.append('article-body')
+        method_type = 1
+        class_type = 'div'
+    elif 'nationalgeographic' in url:
+        class_name.append('content parsys')
+        method_type = 0
+        class_type = 'div'
+    elif 'npr.org' in url:
+        class_name.append('story')
+        method_type = 0
+        class_type = 'article'
+    elif 'bloomberg.com' in url:
+        #fix bloomberg
+        class_name.append('body-copy-v2 fence-body')
+        method_type = 1
+        class_type = 'div'
+    elif 'news.yahoo.com' in url:
+        class_name.append('caas-body')
+        method_type = 0
+        class_type = 'div'
+    
 
 
     entire_text = ''
@@ -128,7 +191,7 @@ def extractText(url):
 
     return entire_text
 
-url = 'https://www.nbcnews.com/politics/white-house/biden-reverse-trump-s-transgender-military-ban-n1255522'
+url = 'https://news.yahoo.com/coronavirus-updates-texas-cases-hospitalizations-090010553.html'
 
 print(extractText(url))
 
