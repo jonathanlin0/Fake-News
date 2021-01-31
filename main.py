@@ -7,7 +7,6 @@ from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import cross_val_score
-from newspaper import Article
 import urllib.request
 import requests
 from bs4 import BeautifulSoup
@@ -277,16 +276,19 @@ print(sum([1 if findlabel((df_fake['text'][i]))=='Fake' else 0 for i in range(le
 # line for the end of the Fake News Classifier Model Stats module
 print('----------------------------------------------------')
 
-f = open('keys.txt','r')
-bob = f.readlines()
-f.close()
 
 
-CONSUMER_KEY = 'CONSUMER_KEY'
-CONSUMER_SECRET = 'CONSUMER_SECRET'
-ACCESS_KEY = 'ACCESS_KEY'
-ACCESS_SECRET = 'ACCESS_SECRET'
 
+
+with open('keys.txt') as f:
+    content = f.readlines()
+# you may also want to remove whitespace characters like `\n` at the end of each line
+content = [x.strip() for x in content] 
+
+CONSUMER_KEY = content[0]
+CONSUMER_SECRET = content[1]
+ACCESS_KEY = content[2]
+ACCESS_SECRET = content[3]
 
 
 
