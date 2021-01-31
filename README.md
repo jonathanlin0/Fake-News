@@ -17,4 +17,6 @@ This program was coded in Python 3.8, so you will have to do the following comma
 `pip install pandas`\
 `pip install sklearn`\
 `pip install urllib3`\
-`pip install beautifulsoup4`
+`pip install beautifulsoup4`\
+\
+Note: you may have to do `pip3 install` instead of `pip install` for installing packages depending on your OS, comptuer, etc
