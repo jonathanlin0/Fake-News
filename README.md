@@ -1,6 +1,5 @@
 # Fake News Classifier Twitter Bot
 ### By: Jonathan Lin 1/31/2021
-<br/>
 
 ## About
 This project was my first project involving machine learning and Twitter's API. I used a Passive Aggressive Classifier, utilizing over 25,000 sample news articles to create the model. I then used the tweepy wrapper for the Twitter Developer API to integrate it.
